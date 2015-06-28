@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var fs = require('fs'),
     zlib = require('zlib'),
     async = require('async'),

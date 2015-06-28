@@ -10,5 +10,8 @@
   },
   "name": "emergence-backup",
   "author": "Chris Alfano <chris@jarv.us>",
-  "homepage": "http://emr.ge"
+  "homepage": "http://emr.ge",
+  "bin": {
+    "emergence-backup": "./backup.js"
+  }
 }
