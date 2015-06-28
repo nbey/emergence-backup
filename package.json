@@ -1,0 +1,14 @@
+{
+  "description": "Backup tools for emergence servers",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "winston": "^1.0.1",
+    "async": "^1.2.1",
+    "sequest": "^0.8.0",
+    "rsyncwrapper": "^0.4.3 "
+  },
+  "name": "emergence-backup",
+  "author": "Chris Alfano <chris@jarv.us>",
+  "homepage": "http://emr.ge"
+}
