@@ -5,20 +5,27 @@ var fs = require('fs'),
     rsync = require('rsyncwrapper').rsync;
 
 
+// paths
+var backupServicePath = '/emergence/services/backup',
+    configPath = backupServicePath + '/config.json',
+    privateKeyPath = backupServicePath + '/id_rsa',
+    logsPath = backupServicePath + '/logs';
+
+
 // configure logger
-if (!fs.existsSync('/var/log/emergence-backup')){
-    fs.mkdirSync('/var/log/emergence-backup');
+if (!fs.existsSync(logsPath)){
+    fs.mkdirSync(logsPath);
 }
 
 winston.add(winston.transports.DailyRotateFile, {
     level: 'verbose',
-    filename: '/var/log/emergence-backup/log'
+    filename: logsPath + '/backup'
 });
 
 
 // load config
 winston.info('Loading config...');
-var config = JSON.parse(fs.readFileSync('/etc/mrbackup/config.json'));
+var config = JSON.parse(fs.readFileSync(configPath));
 winston.info('Loaded config:', config);
 
 
@@ -26,7 +33,7 @@ winston.info('Creating SSH connection...');
 var ssh = sequest.connect({
     host: config.host,
     username: config.user,
-    privateKey: fs.readFileSync('/etc/mrbackup/id_rsa')
+    privateKey: fs.readFileSync(privateKeyPath)
 });
 
 
@@ -36,7 +43,12 @@ async.auto({
     getHome: function(callback) {
         winston.info('Checking home directory...');
         ssh('echo $HOME', function(error, output, info) {
-            var home = output.trim(0);
+            if (error) {
+                callback(error);
+                return;
+            }
+
+            var home = output.trim();
             winston.info('Remote home directory:', home);
             callback(null, home);
         });
@@ -47,6 +59,11 @@ async.auto({
         function(callback, results) {
             winston.info('Creating remote directories...');
             ssh('mkdir -p ~/emergence-sites/logs ~/emergence-sql/logs', function(error, output, info) {
+                if (error) {
+                    callback(error);
+                    return;
+                }
+
                 if (info.code == 0) {
                     callback();
                 } else {
@@ -62,7 +79,7 @@ async.auto({
             winston.info('Synchronizing SQL backups to server...');
             rsync({
                 host: config.user + '@' + config.host,
-                privateKey: '/etc/mrbackup/id_rsa',
+                privateKey: privateKeyPath,
                 //noExec: true,
 
                 src: '/emergence/sql-backups/',
@@ -70,13 +87,6 @@ async.auto({
 
                 recursive: true,
                 //dryRun: true,
-                exclude: [
-                    '*'
-                ],
-                include: [
-                    '*/',
-                    '*.2015-06-27.sql.bz2'
-                ],
 
                 args: [
                     '-a',
@@ -84,10 +94,12 @@ async.auto({
                     '--chmod=-rwx,ug+Xr,u+w'
                 ]
             }, function(error, stdout, stderr, cmd) {
+                winston.info('Finished rsync:', cmd);
+
                 if (error) {
                     callback(error);
                 } else {
-                    stdout = stdout.trim();
+                    stdout = (stdout || '').trim();
                     winston.info('sql synchronized, items changed:', stdout ? stdout.split(/\n/).length : 0);
                     winston.verbose('rsync output:\n' + stdout);
                     callback();
