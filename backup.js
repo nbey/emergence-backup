@@ -171,7 +171,8 @@ async.auto({
                     '-a',
                     '-i',
                     '--chmod=-rwx,ug+Xr,u+w',
-                    '--links'
+                    '--links',
+                    '--compress'
                 ]
             }, function(error, stdout, stderr, cmd) {
                 if (error) return callback(error);
