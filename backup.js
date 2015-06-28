@@ -246,7 +246,7 @@ async.auto({
 
 }, function(error, results) {
     if (error) {
-        winston.error('Backup failed', error);
+        winston.error('Backup failed:', error);
     }
 
     winston.info('Backup complete:', results);
