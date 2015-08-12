@@ -5,6 +5,7 @@ var fs = require('fs'),
     async = require('async'),
     winston = require('winston'),
     sequest = require('sequest'),
+    notificationRequest = require('request'),
     rsync = require('rsyncwrapper').rsync;
 
 
@@ -30,7 +31,6 @@ winston.info('Loading config...');
 var config = JSON.parse(fs.readFileSync(configPath));
 winston.info('Loaded config:', config);
 
-
 // connect to SSH
 winston.info('Creating SSH connection...');
 var ssh = sequest.connect({
@@ -40,9 +40,7 @@ var ssh = sequest.connect({
 });
 
 
-
 winston.info('Executing backup...');
-
 async.auto({
     getToday: function(callback) {
         callback(null, (new Date()).toISOString().split('T')[0]);
@@ -243,6 +241,22 @@ async.auto({
                 gzip.end(stdout);
             });
         }
+    ],
+    sendReport: [
+        'uploadSql',
+        function(callback, results) {
+            notificationRequest.post(config.notificationClient + '/backupresults',
+            { form: {
+                'notificationKey': config.notificationKey,
+                'host': config.host,
+                'message': 'success'
+            }},
+            function (error, response, body) {
+               console.log('Send report'); 
+               console.log(body);
+            }
+         );
+        }
     ]
 
 }, function(error, results) {
@@ -253,3 +267,4 @@ async.auto({
     winston.info('Backup complete:', results);
     ssh.end();
 });
+
