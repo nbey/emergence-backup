@@ -262,8 +262,9 @@ async.auto({
 						callback(results['error'], false);
 					}
 				} else {
-					winston.info('Report failed with error: ' + results['error']);
-					callback(results['error'], false);
+					winston.info('Report failed with error');
+					winston.info(error);
+					callback(error, false);
 				}
 				
 				// Callback is not being fired from above, only this one
@@ -280,5 +281,5 @@ async.auto({
 
     winston.info('Backup complete:', results);
     ssh.end();
-	process.exit()
+    process.exit()
 });
