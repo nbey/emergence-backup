@@ -244,32 +244,32 @@ async.auto({
     sendReport: [
         'uploadSql',
         function(callback, results) {
-			winston.info('Sending report...');
-			notificationRequest.post(config.notificationClient + '/backupresults',
-				{ form: {
-				    'notificationKey': config.notificationKey,
-				    'host': config.notificationHost,
-				    'message': 'success'
-				}},
-				function (error, response, body) {
-					if (! error && response.statusCode == 200) {
-						var results = JSON.parse(body);
-						if (results['success'] == true) {
-							winston.info('Report sent sucessfully');
-							callback(null, true);
-						} else {
-							winston.info('Report failed with error: ' + results['error']);
-							callback(results['error'], false);
-						}
+		winston.info('Sending report...');
+		notificationRequest.post(config.notificationClient + '/backupresults',
+			{ form: {
+			    'notificationKey': config.notificationKey,
+			    'host': config.notificationHost,
+			    'message': 'success'
+			}},
+			function (error, response, body) {
+				if (! error && response.statusCode == 200) {
+					var results = JSON.parse(body);
+					if (results['success'] == true) {
+						winston.info('Report sent sucessfully');
+						callback(null, true);
 					} else {
 						winston.info('Report failed with error: ' + results['error']);
 						callback(results['error'], false);
 					}
-					
-					// Callback is not being fired from above, only this one
-					callback(null, true);
+				} else {
+					winston.info('Report failed with error: ' + results['error']);
+					callback(results['error'], false);
 				}
-			);
+				
+				// Callback is not being fired from above, only this one
+				callback(null, true);
+			}
+		);
         }
     ] 
 
