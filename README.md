@@ -27,7 +27,7 @@ Paste contents of id_rsa.pub output from last command on target machine
 
 Verify ssh can connect with the key
 
-    sudo ssh -i /emergence/services/backup/id_rsa clients01@backup01.jarv.us
+    sudo ssh -i /emergence/services/backup/id_rsa username@example.com
 
 ## Run Backup
     
