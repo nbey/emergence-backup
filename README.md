@@ -64,10 +64,13 @@ sudo vim /usr/local/bin/backup-all-databases.pl
 
 Update cron.d to run both the nightly backup and the emergence-backup daily. Stagger the first two numbers (ie. 5:05 AM) relative to the backup site so all the backups aren't running at the same time. 
 
-    5 5     * * *   root    /usr/local/bin/backup-all-databases.pl && /usr/local/bin/emergence-backup
+````
+5 5     * * *   root    /usr/local/bin/backup-all-databases.pl && /usr/local/bin/emergence-backup
+````
 
 ## Manually Run Backup
 
 ```
+sudo backup-all-databases.pl
 sudo emergence-backup
 ```
