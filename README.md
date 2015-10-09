@@ -62,6 +62,8 @@ sudo vim /usr/local/bin/backup-all-databases.pl
 
 ## Update Nightly Cronjob
 
+*This step is only necessary if you aren't using the nightly-backup cronjob as it runs the followng two in succession.
+
 Update cron.d to run both the nightly backup and the emergence-backup daily. Stagger the first two numbers (ie. 5:05 AM) relative to the backup site so all the backups aren't running at the same time. 
 
 ````
