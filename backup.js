@@ -382,5 +382,5 @@ async.auto({
     }
 
     winston.info('Backup complete:', results);
-//     ssh.end();
+     ssh.end();
 });
