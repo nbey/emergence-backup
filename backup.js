@@ -32,8 +32,8 @@ var config = JSON.parse(fs.readFileSync(configPath));
 winston.info('Loaded config:', config);
 
 
-connect to SSH
-//winston.info('Creating SSH connection...');
+//connect to SSH
+winston.info('Creating SSH connection...');
 var ssh = sequest.connect({
     host: config.host,
     username: config.user,
@@ -197,6 +197,7 @@ async.auto({
 	uploadSql: [
 		'getToday',
 		'makeDirectories',
+		'backupSqlDatabases',
 		function(callback, results) {
 			var today = results.getToday,
 				remoteLogPath = 'emergence-sql/logs/' + today + '.gz';
