@@ -13,7 +13,15 @@ sudo vim /emergence/services/backup/config.json
 ```
 {
     "host": "example.com",
-    "user": "siteuser"
+    "user": "siteuser",
+    "database": {
+        "username": "backup",
+        "password": "backup_password",
+        "socket" : "/emergence/services/run/mysqld/mysqld.sock",
+        "ignore" : [
+            "mysql", "information_schema", "performance_schema"
+        ]
+    }
 }
 ```
 
@@ -36,17 +44,6 @@ sudo ssh -i /emergence/services/backup/id_rsa username@example.com
 
 # sql-backup Installation 
 
-The next step is to install the sql-backup script to faciliate the sql nightly sql backups.
-
-```
-sudo mkdir /emergence/sql-backups
-sudo wget https://gist.github.com/themightychris/0c08d47d7025f8867512/raw/68adfec5a373f539155283835df5afca90f61ea2/emergence-sql-backup -O /etc/cron.d/emergence-sql-backup
-cd /usr/local/bin/
-sudo wget https://gist.github.com/themightychris/0c08d47d7025f8867512/raw/bfd10e39eeb2cd7630e99b622e3727cb66fb416f/backup-all-databases.pl
-sudo chmod 700 backup-all-databases.pl
-sudo chown root:root backup-all-databases.pl
-```
-
 ### Create mysql database user
 
 ```
@@ -54,11 +51,7 @@ mysql>CREATE USER 'backup'@'localhost' IDENTIFIED BY 'CREATEPASSWORD';
 mysql>GRANT SELECT, LOCK TABLES, SHOW VIEW ON *.* TO 'backup'@'localhost';
 ```
 
-Now place password you used to create he backup mysql user to the 
-
-```
-sudo vim /usr/local/bin/backup-all-databases.pl
-```
+Now place password you used to create the backup mysql user to the config file (/emergence/services/backup/config.json)
 
 ## Update Nightly Cronjob
 
@@ -67,12 +60,11 @@ sudo vim /usr/local/bin/backup-all-databases.pl
 Update cron.d to run both the nightly backup and the emergence-backup daily. Stagger the first two numbers (ie. 5:05 AM) relative to the backup site so all the backups aren't running at the same time. 
 
 ````
-5 5     * * *   root    /usr/local/bin/backup-all-databases.pl && /usr/local/bin/emergence-backup
+5 5     * * *   root    /usr/local/bin/emergence-backup
 ````
 
 ## Manually Run Backup
 
 ```
-sudo backup-all-databases.pl
 sudo emergence-backup
 ```
