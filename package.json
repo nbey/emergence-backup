@@ -6,8 +6,7 @@
     "winston": "^1.0.1",
     "async": "^1.2.1",
     "sequest": "^0.8.0",
-    "rsyncwrapper": "^0.4.3 ",
-    "exec-sync": "^0.1.6"
+    "rsyncwrapper": "^0.4.3 "
   },
   "name": "emergence-backup",
   "author": "Chris Alfano <chris@jarv.us>",
